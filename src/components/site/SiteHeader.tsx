@@ -5,6 +5,7 @@ import { Wordmark } from "./Wordmark";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { EVENTBRITE_URL } from "@/data/grafted";
 
 const NAV = [
   { to: "/", label: "Home" },
@@ -38,14 +39,14 @@ export function SiteHeader() {
 
         <div className="hidden md:flex md:items-center md:gap-3">
           <Button asChild variant="ghost" className="font-eyebrow text-xs uppercase tracking-[0.18em]">
-            <Link to="/contact">Apply for Membership</Link>
+            <Link to="/join">Become a Member</Link>
           </Button>
           <Button
             asChild
             className="bg-deep-waters font-eyebrow text-xs uppercase tracking-[0.18em] text-river-sand hover:bg-still-pool"
           >
             <a
-              href="https://www.eventbrite.ca/e/grafted-faith-integrated-business-networking-tickets-1989963772211"
+              href={EVENTBRITE_URL}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -95,7 +96,7 @@ export function SiteHeader() {
                   onClick={() => setOpen(false)}
                 >
                   <a
-                    href="https://www.eventbrite.ca/e/grafted-faith-integrated-business-networking-tickets-1989963772211"
+                    href={EVENTBRITE_URL}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -108,7 +109,7 @@ export function SiteHeader() {
                   className="font-eyebrow text-xs uppercase tracking-[0.18em]"
                   onClick={() => setOpen(false)}
                 >
-                  <Link to="/contact">Apply for Membership</Link>
+                  <Link to="/join">Become a Member</Link>
                 </Button>
               </div>
             </SheetContent>
