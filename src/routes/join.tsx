@@ -1,11 +1,11 @@
-import { FormEvent, useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { FormEvent, useEffect, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { ArrowRight, Check, CreditCard, Mail } from "lucide-react";
 import { PageHero } from "@/components/site/PageHero";
 import { Section } from "@/components/site/Section";
 import { Button } from "@/components/ui/button";
 import { MEMBERSHIP_PRICING } from "@/data/grafted";
-import { MEMBER_STORAGE_KEY, PendingMemberSignup, STRIPE_PLACEHOLDER_COPY } from "@/data/memberRegistration";
+import { MEMBER_STORAGE_KEY, PendingMemberSignup } from "@/data/memberRegistration";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/join")({
@@ -30,8 +30,7 @@ const fieldClass = "mt-2 w-full rounded-md border border-deep-waters/15 bg-backg
 const labelClass = "font-eyebrow text-[10px] uppercase tracking-[0.22em] text-deep-waters/65";
 
 function JoinPage() {
-  const navigate = useNavigate();
-  const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "saving" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [form, setForm] = useState<PendingMemberSignup>({
     first_name: "",
@@ -42,12 +41,35 @@ function JoinPage() {
     public_directory_consent: false,
   });
 
+  useEffect(() => {
+    const loadSavedSignup = async () => {
+      const raw = localStorage.getItem(MEMBER_STORAGE_KEY);
+      if (raw) {
+        try {
+          const saved = JSON.parse(raw) as Partial<PendingMemberSignup>;
+          setForm((current) => ({ ...current, ...saved }));
+        } catch {
+          // Ignore unreadable local storage and keep the blank form.
+        }
+      }
+
+      const { data } = await supabase.auth.getUser();
+      if (data?.user?.email) {
+        setForm((current) => ({ ...current, email: data.user.email ?? current.email }));
+      }
+    };
+
+    loadSavedSignup();
+  }, []);
+
   const update = (key: keyof PendingMemberSignup, value: string | boolean) => {
     setForm((current) => ({ ...current, [key]: value }));
   };
 
   const continueWithGoogle = async () => {
     setErrorMessage("");
+    localStorage.setItem(MEMBER_STORAGE_KEY, JSON.stringify(form));
+
     try {
       await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -73,15 +95,19 @@ function JoinPage() {
     }
 
     try {
-      const supabaseAny = supabase as any;
-      const { data: userResult } = await supabase.auth.getUser();
-      const user = userResult?.user;
+      const { data } = await supabase.auth.getUser();
+
+      if (!data?.user) {
+        setStatus("error");
+        setErrorMessage("Please continue with Google before payment so Stripe can connect your membership to your account.");
+        return;
+      }
+
       const payload = {
         ...form,
-        user_id: user?.id ?? null,
-        email: user?.email ?? form.email,
+        email: data.user.email ?? form.email,
         account_status: "pending_payment",
-        payment_status: "stripe_placeholder",
+        payment_status: "checkout_started",
         profile_complete: false,
         founding_member: false,
         signup_date: new Date().toISOString(),
@@ -89,14 +115,24 @@ function JoinPage() {
 
       localStorage.setItem(MEMBER_STORAGE_KEY, JSON.stringify(payload));
 
-      await supabaseAny.from("member_profiles").upsert(payload, { onConflict: "email" });
-      setStatus("saved");
-      navigate({ to: "/complete-profile" });
+      const { data: checkoutData, error } = await supabase.functions.invoke("create-checkout-session", {
+        body: payload,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      const checkoutUrl = checkoutData?.url;
+      if (!checkoutUrl) {
+        throw new Error("Stripe checkout URL was not returned.");
+      }
+
+      window.location.href = checkoutUrl;
     } catch (error) {
       console.error(error);
-      localStorage.setItem(MEMBER_STORAGE_KEY, JSON.stringify(form));
-      setStatus("saved");
-      navigate({ to: "/complete-profile" });
+      setStatus("error");
+      setErrorMessage("Stripe checkout could not be started. Please try again, or contact Grafted if the issue continues.");
     }
   };
 
@@ -105,7 +141,7 @@ function JoinPage() {
       <PageHero
         eyebrow="Become a Member"
         title="Start your Grafted membership."
-        subtitle="Create your account, save your member details, and complete your profile. Billing is being connected through Stripe and will be added before paid membership begins."
+        subtitle="Create your account, save your member details, and continue to Stripe Checkout. After payment, you will return to complete your profile."
       />
 
       <Section tone="sand">
@@ -113,7 +149,7 @@ function JoinPage() {
           <form onSubmit={submit} className="rounded-2xl border border-border bg-background p-6 shadow-sm md:p-8">
             <div className="font-eyebrow text-[10px] uppercase tracking-[0.28em] text-refined-gold">Step 1</div>
             <h2 className="mt-3 font-display text-4xl text-deep-waters">Create your member account.</h2>
-            <p className="mt-3 text-deep-waters/75">Use Google sign in or enter your member details. Your profile will stay pending until billing and profile completion are done.</p>
+            <p className="mt-3 text-deep-waters/75">Use Google sign in, enter your member details, then continue to payment. Your profile becomes active after payment and profile completion are both done.</p>
 
             <Button type="button" onClick={continueWithGoogle} variant="outline" className="mt-6 w-full border-deep-waters/20 font-eyebrow text-xs uppercase tracking-[0.18em]">
               Continue with Google
@@ -135,7 +171,7 @@ function JoinPage() {
             {errorMessage && <p className="mt-4 text-sm text-red-700">{errorMessage}</p>}
 
             <Button disabled={status === "saving"} className="mt-6 bg-deep-waters text-river-sand hover:bg-still-pool font-eyebrow text-xs uppercase tracking-[0.2em]">
-              {status === "saving" ? "Saving..." : "Continue to Profile"}
+              {status === "saving" ? "Preparing Checkout..." : "Continue to Payment"}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </form>
@@ -150,13 +186,13 @@ function JoinPage() {
               </ul>
             </div>
             <div className="rounded-2xl border border-border bg-river-pale p-6">
-              <div className="flex items-center gap-3 font-serif text-xl text-deep-waters"><CreditCard className="h-5 w-5 text-refined-gold" /> Stripe placeholder</div>
-              <p className="mt-3 text-sm leading-relaxed text-deep-waters/75">{STRIPE_PLACEHOLDER_COPY}</p>
-              <p className="mt-3 text-xs text-deep-waters/55">TODO: connect Stripe Checkout using STRIPE_PRICE_ID and server-side Stripe secrets once account access is ready.</p>
+              <div className="flex items-center gap-3 font-serif text-xl text-deep-waters"><CreditCard className="h-5 w-5 text-refined-gold" /> Stripe Checkout</div>
+              <p className="mt-3 text-sm leading-relaxed text-deep-waters/75">Membership billing is handled through Stripe Checkout. You will return to Grafted to complete your profile after payment.</p>
+              <p className="mt-3 text-xs text-deep-waters/55">Payment status will be finalized by the Stripe webhook in the next build step.</p>
             </div>
             <div className="rounded-2xl border border-border bg-background p-6 text-sm text-deep-waters/75">
               <Mail className="mb-3 h-5 w-5 text-refined-gold" />
-              After this step, complete your member profile so the directory is ready when billing turns on.
+              After payment, complete your member profile so the directory is ready.
             </div>
           </aside>
         </div>
