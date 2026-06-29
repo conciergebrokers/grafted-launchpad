@@ -5,7 +5,6 @@ import {
   HeartHandshake,
   Hammer,
   Repeat,
-  HandHelping,
 } from "lucide-react";
 
 export const EVENTBRITE_URL =
@@ -125,6 +124,27 @@ export const SLIP_TYPES = [
   },
 ];
 
+export const FUTURE_FEATURES = {
+  portal: [
+    "Personal slip activity",
+    "Prayer request follow-up",
+    "Member directory access",
+    "Branch updates",
+  ],
+  members: [
+    "Public member profiles",
+    "Business category filters",
+    "Ideal referral details",
+    "Founding member badges",
+  ],
+  admin: [
+    "Member status review",
+    "Community-level reports",
+    "Branch leadership tools",
+    "Stripe payment status tracking",
+  ],
+};
+
 export const AUDIENCE_CARDS = [
   "Solopreneurs",
   "Tradespeople",
@@ -232,8 +252,6 @@ export const FAQ_ITEMS = [
     a: "Yes, when the community is ready. Grafted is designed to multiply into branches while keeping the same meeting flow, culture, and depth.",
   },
 ];
-
-// Typed placeholder data for future portal, showcase, admin areas
 
 export type Branch = {
   id: string;
