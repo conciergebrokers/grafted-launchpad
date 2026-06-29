@@ -10,10 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as MembersRouteImport } from './routes/members'
+import { Route as JoinRouteImport } from './routes/join'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CompleteProfileRouteImport } from './routes/complete-profile'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as IndexRouteImport } from './routes/index'
@@ -26,6 +29,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortalRoute = PortalRouteImport.update({
   id: '/portal',
   path: '/portal',
@@ -36,6 +44,11 @@ const MembersRoute = MembersRouteImport.update({
   path: '/members',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JoinRoute = JoinRouteImport.update({
+  id: '/join',
+  path: '/join',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
@@ -44,6 +57,11 @@ const FaqRoute = FaqRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompleteProfileRoute = CompleteProfileRouteImport.update({
+  id: '/complete-profile',
+  path: '/complete-profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -80,10 +98,13 @@ const ProtectedAdminAnalyticsRoute = ProtectedAdminAnalyticsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/complete-profile': typeof CompleteProfileRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/join': typeof JoinRoute
   '/members': typeof MembersRoute
   '/portal': typeof PortalRoute
+  '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof ProtectedAdminRouteWithChildren
   '/admin/analytics': typeof ProtectedAdminAnalyticsRoute
@@ -92,10 +113,13 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/complete-profile': typeof CompleteProfileRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/join': typeof JoinRoute
   '/members': typeof MembersRoute
   '/portal': typeof PortalRoute
+  '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof ProtectedAdminRouteWithChildren
   '/admin/analytics': typeof ProtectedAdminAnalyticsRoute
@@ -106,10 +130,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_protected': typeof ProtectedRouteWithChildren
   '/about': typeof AboutRoute
+  '/complete-profile': typeof CompleteProfileRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/join': typeof JoinRoute
   '/members': typeof MembersRoute
   '/portal': typeof PortalRoute
+  '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_protected/admin': typeof ProtectedAdminRouteWithChildren
   '/_protected/admin/analytics': typeof ProtectedAdminAnalyticsRoute
@@ -120,10 +147,13 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/complete-profile'
     | '/contact'
     | '/faq'
+    | '/join'
     | '/members'
     | '/portal'
+    | '/profile'
     | '/sitemap.xml'
     | '/admin'
     | '/admin/analytics'
@@ -132,10 +162,13 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/complete-profile'
     | '/contact'
     | '/faq'
+    | '/join'
     | '/members'
     | '/portal'
+    | '/profile'
     | '/sitemap.xml'
     | '/admin'
     | '/admin/analytics'
@@ -145,10 +178,13 @@ export interface FileRouteTypes {
     | '/'
     | '/_protected'
     | '/about'
+    | '/complete-profile'
     | '/contact'
     | '/faq'
+    | '/join'
     | '/members'
     | '/portal'
+    | '/profile'
     | '/sitemap.xml'
     | '/_protected/admin'
     | '/_protected/admin/analytics'
@@ -159,10 +195,13 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ProtectedRoute: typeof ProtectedRouteWithChildren
   AboutRoute: typeof AboutRoute
+  CompleteProfileRoute: typeof CompleteProfileRoute
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
+  JoinRoute: typeof JoinRoute
   MembersRoute: typeof MembersRoute
   PortalRoute: typeof PortalRoute
+  ProfileRoute: typeof ProfileRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
@@ -173,6 +212,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portal': {
@@ -189,6 +235,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MembersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/join': {
+      id: '/join'
+      path: '/join'
+      fullPath: '/join'
+      preLoaderRoute: typeof JoinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/faq': {
       id: '/faq'
       path: '/faq'
@@ -201,6 +254,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/complete-profile': {
+      id: '/complete-profile'
+      path: '/complete-profile'
+      fullPath: '/complete-profile'
+      preLoaderRoute: typeof CompleteProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -278,10 +338,13 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ProtectedRoute: ProtectedRouteWithChildren,
   AboutRoute: AboutRoute,
+  CompleteProfileRoute: CompleteProfileRoute,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
+  JoinRoute: JoinRoute,
   MembersRoute: MembersRoute,
   PortalRoute: PortalRoute,
+  ProfileRoute: ProfileRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
