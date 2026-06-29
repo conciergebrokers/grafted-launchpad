@@ -8,6 +8,9 @@ import {
   HandHelping,
 } from "lucide-react";
 
+export const EVENTBRITE_URL =
+  "https://www.eventbrite.ca/e/grafted-faith-integrated-business-networking-tickets-1991515299872";
+
 export const MEETING_INFO = {
   day: "Tuesdays",
   time: "12:30 PM",
@@ -17,6 +20,28 @@ export const MEETING_INFO = {
   founder: "Jen Garrison",
   email: "info@graftedexchange.ca",
   domain: "graftedexchange.ca",
+};
+
+export const MEMBERSHIP_PRICING = {
+  price: 150,
+  currency: "CAD",
+  cadence: "month",
+  label: "$150/month",
+  description:
+    "One simple monthly membership. Built to keep the room accessible, sustainable, and easy to understand.",
+  notes: [
+    "No GST is charged at this time.",
+    "Lunch is not included. Members pay for their own lunch at each meeting.",
+    "The first 15 paid signups receive founding member status.",
+  ],
+  benefits: [
+    "Weekly Tuesday meetings",
+    "Member directory access once your profile is complete",
+    "Grafted In, The Forge, The Exchange, and Kingdom Come",
+    "Referral, prayer, and growth tracking as the member tools come online",
+    "Founding member badge for the first 15 paid signups",
+    "Lunch is on your own",
+  ],
 };
 
 export const PILLARS = [
@@ -79,15 +104,6 @@ export const MEETING_SEGMENTS: {
     body: "The community closes in prayer. Requests are written down, followed up, and answered prayer is celebrated.",
     icon: HeartHandshake,
   },
-];
-
-export const PRICING_TIERS = [
-  { label: "Solo or home-based", price: 100 },
-  { label: "1 to 3 employees", price: 150 },
-  { label: "3 to 5 employees", price: 200 },
-  { label: "5 to 10 employees", price: 250 },
-  { label: "10 to 20 employees", price: 350 },
-  { label: "20 or more employees", price: 500 },
 ];
 
 export const SLIP_TYPES = [
@@ -181,11 +197,11 @@ export const FAQ_ITEMS = [
   },
   {
     q: "What does membership cost?",
-    a: "Membership is tiered by business size. Solo or home-based: $100 per month. 1 to 3 employees: $150 per month. 3 to 5 employees: $200 per month. 5 to 10 employees: $250 per month. 10 to 20 employees: $350 per month. 20 or more employees: $500 per month. Twenty percent of membership fees is set aside for charitable giving, with members voting on where those funds are directed.",
+    a: "Membership is $150 CAD per month per member. No GST is charged at this time. Lunch is not included, so members pay for their own lunch at each meeting. The first 15 paid signups receive founding member status.",
   },
   {
     q: "Are meals included?",
-    a: "Members and visitors pay for their own meal at each meeting.",
+    a: "No. Members and visitors pay for their own meal at each meeting.",
   },
   {
     q: "What if I cannot afford membership?",
@@ -257,165 +273,3 @@ export type Slip = {
   value?: number;
   description: string;
 };
-
-export type PrayerRequest = {
-  id: string;
-  memberId: string;
-  branchId: string;
-  request: string;
-  status: "open" | "answered" | "archived";
-  dateSubmitted: string;
-  dateAnswered?: string;
-};
-
-export type BranchKPI = {
-  branchId: string;
-  period: string;
-  memberCount: number;
-  visitorCount: number;
-  sowingSlipCount: number;
-  harvestSlipCount: number;
-  forgeSlipCount: number;
-  growthSlipCount: number;
-  referralValue: number;
-  closedBusinessValue: number;
-  prayerRequestCount: number;
-  answeredPrayerCount: number;
-};
-
-export const BRANCHES: Branch[] = [
-  {
-    id: "edmonton-root",
-    name: "Edmonton Root",
-    city: "Edmonton",
-    province: "Alberta",
-    meetingDay: "Tuesday",
-    meetingTime: "12:30 PM",
-    venueName: "To be announced",
-    venueAddress: "Edmonton, Alberta",
-    leaderName: "Jen Garrison",
-    status: "founding",
-  },
-];
-
-export const MEMBERS: Member[] = [
-  {
-    id: "m1",
-    firstName: "Sarah",
-    lastName: "Bennett",
-    businessName: "Bennett Bookkeeping",
-    industry: "Accounting",
-    branchId: "edmonton-root",
-    membershipStatus: "founding",
-    publicProfileEnabled: true,
-    bio: "Helping Edmonton small businesses keep clean books and clearer minds.",
-  },
-  {
-    id: "m2",
-    firstName: "Marcus",
-    lastName: "Reid",
-    businessName: "Reid Custom Carpentry",
-    industry: "Trades",
-    branchId: "edmonton-root",
-    membershipStatus: "founding",
-    publicProfileEnabled: true,
-    bio: "Built-ins, kitchens, and millwork for homes that get used.",
-  },
-  {
-    id: "m3",
-    firstName: "Priya",
-    lastName: "Okafor",
-    businessName: "Northlight Studio",
-    industry: "Branding and design",
-    branchId: "edmonton-root",
-    membershipStatus: "founding",
-    publicProfileEnabled: true,
-    bio: "Brand identity and websites for service businesses across Alberta.",
-  },
-  {
-    id: "m4",
-    firstName: "David",
-    lastName: "Chen",
-    businessName: "Cornerstone Insurance",
-    industry: "Financial services",
-    branchId: "edmonton-root",
-    membershipStatus: "active",
-    publicProfileEnabled: true,
-    bio: "Personal and small business coverage with plain language and follow through.",
-  },
-];
-
-export const SAMPLE_KPI: BranchKPI = {
-  branchId: "edmonton-root",
-  period: "Q1 sample",
-  memberCount: 24,
-  visitorCount: 11,
-  sowingSlipCount: 38,
-  harvestSlipCount: 12,
-  forgeSlipCount: 47,
-  growthSlipCount: 22,
-  referralValue: 86400,
-  closedBusinessValue: 41200,
-  prayerRequestCount: 19,
-  answeredPrayerCount: 7,
-};
-
-export const FUTURE_FEATURES = {
-  portal: [
-    "Member profile",
-    "Slip submission",
-    "Personal activity reports",
-    "Prayer requests and answered prayer",
-    "Branch updates",
-    "Member resources",
-  ],
-  showcase: [
-    "Public member directory",
-    "Member business cards",
-    "Filter by branch, industry, and location",
-    "Member profile pages",
-    "Visibility permissions",
-  ],
-  admin: [
-    "Total members",
-    "Branch count",
-    "Visitor pipeline",
-    "Sowing Slips",
-    "Harvest Slips",
-    "Forge Slips",
-    "Growth Slips",
-    "Referral value",
-    "Closed business value",
-    "Prayer requests",
-    "Answered prayers",
-  ],
-  analytics: [
-    "Branch-by-branch performance",
-    "Attendance trends",
-    "Referral volume",
-    "Closed business value",
-    "Forge Meeting activity",
-    "Growth activity",
-    "Prayer request follow-up",
-    "Quarterly summary reports",
-    "Annual testimony report",
-  ],
-  branch: [
-    "Branch-level KPIs",
-    "Member activity",
-    "Visitor activity",
-    "Slip trends",
-    "Prayer follow-up",
-    "Leadership notes",
-  ],
-};
-
-export const SUPPORT_ICON = HandHelping;
-
-export const VISIT_EXPECTATIONS = [
-  "Come as you are",
-  "Pay for your own meal",
-  "Be ready for real conversation",
-  "Expect prayer and scripture",
-  "You can visit up to three times before deciding",
-];
