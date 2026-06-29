@@ -69,26 +69,43 @@ function CompleteProfilePage() {
     event.preventDefault();
     setStatus("saving");
 
-    const payload = {
-      ...form,
-      number_of_employees: form.number_of_employees ? Number(form.number_of_employees) : null,
-      profile_complete: true,
-      account_status: "pending_payment",
-      updated_at: new Date().toISOString(),
-    };
-
     try {
       const supabaseAny = supabase as any;
       const { data } = await supabase.auth.getUser();
-      await supabaseAny.from("member_profiles").upsert(
-        { ...payload, user_id: data?.user?.id ?? null, email: data?.user?.email ?? form.email },
-        { onConflict: "email" },
-      );
+      const email = data?.user?.email ?? form.email;
+
+      const { data: existingProfile } = await supabaseAny
+        .from("member_profiles")
+        .select("payment_status, account_status")
+        .eq("email", email)
+        .maybeSingle();
+
+      const paymentStatus = existingProfile?.payment_status ?? "pending";
+      const accountStatus = paymentStatus === "paid" ? "active" : "pending_payment";
+
+      const payload = {
+        ...form,
+        email,
+        user_id: data?.user?.id ?? null,
+        number_of_employees: form.number_of_employees ? Number(form.number_of_employees) : null,
+        profile_complete: true,
+        account_status: accountStatus,
+        updated_at: new Date().toISOString(),
+      };
+
+      await supabaseAny.from("member_profiles").upsert(payload, { onConflict: "email" });
+      localStorage.setItem(MEMBER_STORAGE_KEY, JSON.stringify({ ...payload, payment_status: paymentStatus }));
     } catch (error) {
       console.error(error);
+      const fallbackPayload = {
+        ...form,
+        profile_complete: true,
+        account_status: "pending_payment",
+        updated_at: new Date().toISOString(),
+      };
+      localStorage.setItem(MEMBER_STORAGE_KEY, JSON.stringify(fallbackPayload));
     }
 
-    localStorage.setItem(MEMBER_STORAGE_KEY, JSON.stringify(payload));
     navigate({ to: "/profile" });
   };
 
